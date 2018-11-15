@@ -1,6 +1,6 @@
 #classification: prediction which brans pf products customers prefer
 #Lara Cobler Moncunill
-#November 9th, 2018
+#November 9th, 2018 - November 14th, 2018
 
 library(readr)
 library(caret)
