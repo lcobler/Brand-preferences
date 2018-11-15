@@ -144,32 +144,7 @@ knn_SAB <- train(
   tuneLength = 10,
   trControl = fitControl,
   metric="Kappa") #use kappa instead of accuracy because imbalance variable
-        #k-Nearest Neighbors 
-        
-        #7501 samples
-        #2 predictor
-        #2 classes: 'Acer', 'Sony' 
-        
-        #Pre-processing: centered (6), scaled (6) 
-        #Resampling: Cross-Validated (10 fold, repeated 3 times) 
-        #Summary of sample sizes: 6751, 6751, 6751, 6751, 6752, 6751, ... 
-        #Resampling results across tuning parameters:
-          
-        #  k   Accuracy   Kappa   
-        #5  0.9101438  0.810864
-        #7  0.9101438  0.810864
-        #9  0.9101438  0.810864
-        #11  0.9101438  0.810864
-        #13  0.9101438  0.810864
-        #15  0.9101438  0.810864
-        #17  0.9101438  0.810864
-        #19  0.9101438  0.810864
-        #21  0.9101438  0.810864
-        #23  0.9101438  0.810864
-        
-        #Kappa was used to select the optimal model using the largest value.
-        #The final value used for the model was k = 23.
-
+       
 #customize tunning grid
 tuned_grid_1 <- expand.grid(k=c(1:5))
 set.seed(123)
@@ -181,35 +156,9 @@ knn_SAB_1 <- train(
   tuneGrid=tuned_grid_1,
   trControl = fitControl,
   metric="Kappa") #use kappa instead of accuracy because imbalance variable
-#k-Nearest Neighbors 
-
-#7501 samples
-#2 predictor
-#2 classes: 'Acer', 'Sony' 
-
-#Pre-processing: centered (6), scaled (6) 
-#Resampling: Cross-Validated (10 fold, repeated 3 times) 
-#Summary of sample sizes: 6750, 6751, 6751, 6752, 6751, 6751, ... 
-#Resampling results across tuning parameters:
-  
-#  k  Accuracy   Kappa    
-#1  0.9101448  0.8108757
-#2  0.9101448  0.8108757
-#3  0.9101448  0.8108757
-#4  0.9101448  0.8108757
-#5  0.9101448  0.8108757
-
-#Kappa was used to select the optimal model using the largest value.
-#The final value used for the model was k = 5.
 
 #all the same, we can use the knn_SAB model
-#maybe that all are the same because we have the same samples of all values,
-#no mather the neigtbours you check it's the same.
-
 #because is oredicting the distance between the same group have the same values,
-#try k=1000 k=2000, k=3000, k=4000
-#groups of 3300 for age and 2000 for salary
-# tuned_grid_2 <- expand.grid(k=c(1000,2000,3000,4000)) #crash RStudio
 
 predictors(knn_SAB)
 summary(knn_SAB)
@@ -221,31 +170,6 @@ knn_prob_SAB <- predict(knn_SAB,newdata=testing,type="prob") #with probabilities
 
 #confusion matrix
 confusionMatrix(data=test_knn_SAB, testing$brand)
-        #Confusion Matrix and Statistics
-        
-        #Reference
-        #Prediction Acer Sony
-        #Acer  854  133
-        #Sony   91 1421
-        
-        #Accuracy : 0.9104          
-        #95% CI : (0.8985, 0.9213)
-        #No Information Rate : 0.6218          
-        #P-Value [Acc > NIR] : < 2.2e-16       
-        
-        #Kappa : 0.8111          
-        #Mcnemar's Test P-Value : 0.006155        
-        
-        #Sensitivity : 0.9037          
-        #Specificity : 0.9144          
-        #Pos Pred Value : 0.8652          
-        #Neg Pred Value : 0.9398          
-        #Prevalence : 0.3782          
-        #Detection Rate : 0.3417          
-        #Detection Prevalence : 0.3950          
-        #Balanced Accuracy : 0.9091          
-        
-        #'Positive' Class : Acer            
 
 #performace measurment
 postResample(test_knn_SAB, testing$brand)
@@ -261,26 +185,6 @@ set.seed(123)
 rf_SAB<- train(brand~salary_bin+age_bin, data=training, method="rf", 
                tuneLength=10,
                trControl=fitControl)
-        #Random Forest 
-        
-        #7501 samples
-        #32 predictor
-        #2 classes: 'Acer', 'Sony' 
-        
-        #No pre-processing
-        #Resampling: Cross-Validated (10 fold, repeated 3 times) 
-        #Summary of sample sizes: 6751, 6752, 6752, 6751, 6750, 6750, ... 
-        #Resampling results across tuning parameters:
-          
-        #  mtry  Accuracy   Kappa    
-        #2     0.8570410  0.6825911
-        #3     0.9101449  0.8108638
-        #4     0.9101449  0.8108638
-        #5     0.9101449  0.8108638
-        #6     0.9101449  0.8108638
-        
-        #Accuracy was used to select the optimal model using the largest value.
-        #The final value used for the model was mtry = 3.
 
 #try different number of trees
 model_RF <- list() #create a list of models
@@ -297,48 +201,6 @@ results_rf <- resamples(model_RF)
 summary(results_rf)
 dotplot(results_rf)
 
-#all have the same accuracy and kappa -> take model_RF[[10]] because is faster
-
-#Prediction random forest first prediction
-#test_rf_SAB <- predict(rf_SAB,newdata=testing)
-#rf_prob_SAB <- predict(rf_SAB,newdata=testing,type="prob")
-#head(rf_prob_SAB)
-
-#confusion matrix
-#confusionMatrix(data=test_rf_SAB, testing$brand)
-      #Confusion Matrix and Statistics
-      
-      #Reference
-      #Prediction Acer Sony
-      #Acer  854  133
-      #Sony   91 1421
-      
-      #Accuracy : 0.9104          
-      #95% CI : (0.8985, 0.9213)
-      #No Information Rate : 0.6218          
-      #P-Value [Acc > NIR] : < 2.2e-16       
-      
-      #Kappa : 0.8111          
-      #Mcnemar's Test P-Value : 0.006155        
-      
-      #Sensitivity : 0.9037          
-      #Specificity : 0.9144          
-      #Pos Pred Value : 0.8652          
-      #Neg Pred Value : 0.9398          
-      #Prevalence : 0.3782          
-      #Detection Rate : 0.3417          
-      #Detection Prevalence : 0.3950          
-      #Balanced Accuracy : 0.9091          
-      
-      #'Positive' Class : Acer  
-
-#performace measurment
-#postResample(test_rf_SAB, testing$brand)
-#Accuracy     Kappa 
-#0.9103641 0.8110549 
-
-#plot predicted verses actual ?
-#plot(test_rf_SAB,testing$brand)
 
 #predict testing with model_RF[[10]]
 treen <- toString(10)
@@ -359,25 +221,9 @@ plot(test_rf_10,testing$brand)
 resamp <- resamples(list(knn=knn_SAB,rf=model_RF[[treen]]))
 summary(resamp)
 
-#paired t-test to assess wheter there is a difference in the average resampled under the ROC curve
+#paired t-test to assess wheter there is a difference in the average resampled 
 diff <- diff(resamp)
 summary(diff)
-      #Call:
-      #  summary.diff.resamples(object = diff)
-      
-      #p-value adjustment: bonferroni 
-      #Upper diagonal: estimates of the difference
-      #Lower diagonal: p-value for H0: difference = 0
-      
-      #Accuracy 
-      #knn    rf        
-      #knn        -5.041e-07
-      #rf  0.9999           
-      
-      #Kappa 
-      #knn    rf        
-      #knn        -2.847e-05
-      #rf  0.9963   
 #no differences between models
 
 ##Prediction
@@ -419,14 +265,6 @@ predictions <- predict(model_RF[[treen]],newdata=survey_inc)
 #add predictions to survey_inc
 survey_inc <- cbind(survey_inc,predictions) #column bind prediction to dataset
 
-#plot(survey_inc$salary,survey_inc$age,
-#     main="Predicted brand related to salary and age", #title
-#     ylab="Age", xlab="Salary", #x and y labels
-#     type="p", #type, p as point (default)
-#     col=survey_inc$predictions) #color
-#legend(x="bottomright", legend = levels(survey_inc$predictions), 
-#       col=1:nlevels(survey_inc$predictions), pch=1)
-
 #jitter using ggplot
 ggplot(survey, aes(salary_bin, age_bin, color = brand)) + 
   geom_jitter() +
@@ -447,12 +285,11 @@ ggplot(survey_inc, aes(salary_bin, age_bin, color = predictions)) +
 
 #total brand preferences
 all_table <- table(survey_inc$predictions)+table(survey$brand)
-#Acer Sony 
-#5731 9269 
 
 # Pie Chart with Percentages
 pie(all_table, labels = c("Acer", "Sony"), main="Brand preferences")
 
+#pie chart with percentages
 pct<-round(all_table/sum(all_table)*100)
 lbls<-c("Acer","Sony")
 lbls<-paste(lbls,pct,"%",sep=" ")
