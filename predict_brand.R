@@ -1,4 +1,4 @@
-#classification: prediction which brans pf products customers prefer
+#classification: prediction which product brand customers prefer
 #Lara Cobler Moncunill
 #November 9th, 2018 - November 14th, 2018
 
@@ -6,9 +6,10 @@ library(readr)
 library(caret)
 library(rpart)
 library(rpart.plot)
+library(dplyr)
 
 # Download data set
-survey <- read.csv("Survey Results Complete-Table 1.csv",header=TRUE) 
+survey <- read.csv("/Users/lara/Dropbox/Ubiqum/Lesson 2/Task 2/Survey Results Complete-Table 1.csv",header=TRUE) 
 
 #data exploration
 attributes(survey)   #lists attibutes
@@ -50,7 +51,7 @@ for(i in 1:(ncol(survey))) {    #for every column
   }
   }
 
-#salary versus age, the only seems there is some relation with brand
+#salary versus age, the only that seems there is some relation with brand
 plot(survey$salary,survey$age, 
      xlab="salary",ylab="age",
      col=survey$brand)
@@ -125,7 +126,7 @@ rpart.plot(tree$finalModel) #plot the decision tree
 prp(tree$finalModel) #also plots the decision tree
 #salary and age the most important variables!
 
-# Predictions using salary and age, and brand because seems to be the most inflent variables.
+# Predictions using salary and age, and brand because seems to be the most influent variables.
 
 set.seed(333)
 # define an 75%/25% train/test split of the dataset
@@ -201,7 +202,6 @@ results_rf <- resamples(model_RF)
 summary(results_rf)
 dotplot(results_rf)
 
-
 #predict testing with model_RF[[10]]
 treen <- toString(10)
 test_rf_10 <- predict(model_RF[[treen]],newdata=testing)
@@ -214,7 +214,7 @@ postResample(test_rf_10, testing$brand)
 #Accuracy     Kappa 
 #0.9139656 0.8189813 
 
-#plot predicted verses real
+#plot predicted versus real
 plot(test_rf_10,testing$brand)
       
 ###compare models
@@ -228,7 +228,7 @@ summary(diff)
 
 ##Prediction
 # Download data set
-survey_inc <- read.csv("SurveyIncomplete.csv",header=TRUE) 
+survey_inc <- read.csv("/Users/lara/Dropbox/Ubiqum/Lesson 2/Task 2/SurveyIncomplete.csv",header=TRUE) 
 
 anyNA(survey_inc) #tells if there is any NA value
 
@@ -268,6 +268,8 @@ survey_inc <- cbind(survey_inc,predictions) #column bind prediction to dataset
 #jitter using ggplot
 ggplot(survey, aes(salary_bin, age_bin, color = brand)) + 
   geom_jitter() +
+  scale_color_manual(breaks = c("Acer", "Sony"),
+                     values=c("lightgreen", "steelblue"))+
   labs(x="Salary",
        y="Age",
        title = "Brand Preferences",
@@ -277,6 +279,8 @@ ggplot(survey, aes(salary_bin, age_bin, color = brand)) +
 #predicted
 ggplot(survey_inc, aes(salary_bin, age_bin, color = predictions)) + 
   geom_jitter() +
+  scale_color_manual(breaks = c("Acer", "Sony"),
+                     values=c("lightgreen", "steelblue"))+
   labs(x="Salary",
        y="Age",
        title = "Predicted brand preferences",
@@ -294,3 +298,16 @@ pct<-round(all_table/sum(all_table)*100)
 lbls<-c("Acer","Sony")
 lbls<-paste(lbls,pct,"%",sep=" ")
 pie(all_table, labels = lbls, main="Brand preferences",col=c("blue","orange"))
+
+#merge both dataset
+survey_inc <- survey_inc[,c(1,2,6,7,8,9,10)]
+all <- bind_rows(survey, survey_inc)
+ggplot(all, aes(salary_bin, age_bin, color = brand)) + 
+  geom_jitter() +
+  scale_color_manual(breaks = c("Acer", "Sony"),
+                     values=c("lightgreen", "steelblue"))+
+  labs(x="Salary",
+       y="Age",
+       title = "Customer Brand Preferences",
+       subtitle="All survey",
+       color="Predicted Brand")
