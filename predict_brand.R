@@ -1,5 +1,6 @@
-#classification: prediction which product brand customers prefer
+#Classification: prediction which product brand customers prefer
 #Lara Cobler Moncunill
+#Ubiqum
 #November 9th, 2018 - November 14th, 2018
 
 library(readr)
